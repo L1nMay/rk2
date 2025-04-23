@@ -8,7 +8,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
@@ -20,21 +23,38 @@ jobs:
           ls -lR ${{ github.workspace }}
 
       - name: Debug - Environment Variables
+        if: runner.os == 'Linux'
         shell: bash
         run: |
           echo "Environment variables:"
           env
+      - name: Debug - Environment Variables
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          echo "Environment variables:"
+          Get-ChildItem Env:
 
       - name: Configure CMake
         shell: bash
         run: |
-          set -x  # Enable command tracing
-          SOURCE_DIR="${{ github.workspace }}/lab05dz/banking"  # CMakeLists.txt in lab05dz/banking
+          set -x
+          SOURCE_DIR="${{ github.workspace }}/lab05dz/banking"
           BUILD_DIR="${{ github.workspace }}/build"
           echo "Source directory: $SOURCE_DIR"
           echo "Build directory: $BUILD_DIR"
           cmake -S "$SOURCE_DIR" -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Release
-          set +x  # Disable command tracing
+          set +x
+      - name: Configure CMake - Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $SOURCE_DIR = "${{ github.workspace }}/lab05dz/banking"
+          $BUILD_DIR = "${{ github.workspace }}/build"
+          Write-Host "Source directory: $SOURCE_DIR"
+          Write-Host "Build directory: $BUILD_DIR"
+          cmake -S "$SOURCE_DIR" -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Release
+
 
       - name: Build
         shell: bash
@@ -43,3 +63,9 @@ jobs:
           BUILD_DIR="${{ github.workspace }}/build"
           cmake --build "$BUILD_DIR" --config Release
           set +x
+      - name: Build - Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $BUILD_DIR = "${{ github.workspace }}/build"
+          cmake --build "$BUILD_DIR" --config Release
