@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           set -x  # Enable command tracing
-          SOURCE_DIR="${{ github.workspace }}/your_project_directory" # replace with your directory
+          SOURCE_DIR="${{ github.workspace }}/lab05dz/banking"  # CMakeLists.txt in lab05dz/banking
           BUILD_DIR="${{ github.workspace }}/build"
           echo "Source directory: $SOURCE_DIR"
           echo "Build directory: $BUILD_DIR"
