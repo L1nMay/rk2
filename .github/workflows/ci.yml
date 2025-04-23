@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        compiler:
+          - { name: gcc, command: gcc }
+        #  - { name: clang, command: clang }
+        #exclude:
+        #  - os: windows-latest
+        #    compiler: { name: clang, command: clang } # Clang not configured on Windows
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up environment - Ubuntu
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ # clang
+
+      - name: Set up environment - Visual Studio
+        if: matrix.os == 'windows-latest'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+          init_bat: true
+
+      - name: Configure CMake
+        shell: bash
+        working-directory: ${{ github.workspace }}/hello_world
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic"
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/hello_world/build
+          key: ${{ runner.os }}-${{ hashFiles('hello_world/CMakeLists.txt') }}
+
+      - name: Build
+        shell: bash
+        working-directory: ${{ github.workspace }}/hello_world/build
+        run: cmake --build . --config Release
+
+      - name: Run Tests
+        shell: bash
+        working-directory: ${{ github.workspace }}/hello_world/build
+        run: ./hello_world # Replace with your test execution command
