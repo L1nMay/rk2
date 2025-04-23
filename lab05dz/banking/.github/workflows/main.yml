@@ -8,31 +8,38 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: List Files (Debugging)
+      - name: Debug - List Files
         shell: bash
-        run: ls -lR ${{ github.workspace }}  # Remove after debugging
+        run: |
+          echo "Listing files in ${{ github.workspace }}"
+          ls -lR ${{ github.workspace }}
+
+      - name: Debug - Environment Variables
+        shell: bash
+        run: |
+          echo "Environment variables:"
+          env
 
       - name: Configure CMake
         shell: bash
         run: |
-          SOURCE_DIR="${{ github.workspace }}/lab04dz/hello_world"
-          BUILD_DIR="${{ github.workspace }}/lab04dz/hello_world/build"
-          cmake -S "$SOURCE_DIR" -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic"
+          set -x  # Enable command tracing
+          SOURCE_DIR="${{ github.workspace }}/your_project_directory" # replace with your directory
+          BUILD_DIR="${{ github.workspace }}/build"
+          echo "Source directory: $SOURCE_DIR"
+          echo "Build directory: $BUILD_DIR"
+          cmake -S "$SOURCE_DIR" -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Release
+          set +x  # Disable command tracing
 
       - name: Build
         shell: bash
         run: |
-          BUILD_DIR="${{ github.workspace }}/lab04dz/hello_world/build"
+          set -x
+          BUILD_DIR="${{ github.workspace }}/build"
           cmake --build "$BUILD_DIR" --config Release
-
-      - name: Run Tests (if applicable)
-        shell: bash
-        run: |
-          BUILD_DIR="${{ github.workspace }}/lab04dz/hello_world/build"
-          cd "$BUILD_DIR"
-          ctest -C Release
+          set +x
