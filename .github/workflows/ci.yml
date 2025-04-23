@@ -36,20 +36,20 @@ jobs:
       - name: Configure CMake
         shell: bash
         run: |
-          cmake -S ${{ github.workspace }}/hello_world -B ${{ github.workspace }}/hello_world/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic"
+          cmake -S ${{ github.workspace }}/lab04dz/hello_world -B ${{ github.workspace }}/lab04dz/hello_world/build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic"
 
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
-          path: ${{ github.workspace }}/hello_world/build
+          path: ${{ github.workspace }}/lab04dz/hello_world/build
           key: ${{ runner.os }}-${{ hashFiles('hello_world/CMakeLists.txt') }}
 
       - name: Build
         shell: bash
         run: |
-          cmake --build ${{ github.workspace }}/hello_world/build --config Release
+          cmake --build ${{ github.workspace }}/lab04dz/hello_world/build --config Release
 
       - name: Run Tests
         shell: bash
         run: |
-          ${{ github.workspace }}/hello_world/build/hello_world
+          ${{ github.workspace }}/lab04dz/hello_world/build/hello_world
