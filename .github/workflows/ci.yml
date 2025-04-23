@@ -13,7 +13,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         compiler:
           - { name: gcc, command: gcc }
-        #  - { name: clang, command: clang }
+        #  - { name: clang, command: clang }  # Removed clang for simplicity
         #exclude:
         #  - os: windows-latest
         #    compiler: { name: clang, command: clang } # Clang not configured on Windows
