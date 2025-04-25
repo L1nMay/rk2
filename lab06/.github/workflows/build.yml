@@ -1,4 +1,4 @@
-name: Build and Package
+name: CMake Build
 
 on: [push, pull_request]
 
@@ -7,32 +7,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'  # если у вас есть submodules
+    - uses: actions/checkout@v3
 
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y cmake build-essential
 
-    - name: Configure CMake
-      run: cmake -H. -B_build
-
-    - name: Build project
-      run: cmake --build _build
-
-    - name: Create package (TGZ)
+    - name: Configure (root project)
       run: |
-        cd _build
-        cpack -G "TGZ"
-        cd ..
-        mkdir -p artifacts
-        mv _build/*.tar.gz artifacts/
+        mkdir -p _build
+        cmake -B _build -S .
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v2
+    - name: Build (root project)
+      run: |
+        cmake --build _build --target all
+
+    - name: Test (subproject)
+      working-directory: ./_build
+      run: |
+        ctest --output-on-failure
+
+    - name: Package
+      working-directory: ./_build
+      run: |
+        cpack -G "TGZ"
+        mkdir -p ../artifacts
+        mv *.tar.gz ../artifacts/
+
+    - uses: actions/upload-artifact@v3
       with:
-        name: release-package
+        name: packages
         path: artifacts/*.tar.gz
