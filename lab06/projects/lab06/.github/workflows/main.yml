@@ -1,0 +1,61 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Install Dependencies (General)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y sed
+        sudo apt-get install -y xvfb
+        sudo apt-get install -y libgtest-dev #Устанавливаем gtest
+
+    - name: Install CMake
+      run: sudo apt-get update && sudo apt-get install -y cmake
+
+    - name: Print Environment Variables
+      run: printenv
+
+    - name: Remove Build Directory
+      run: rm -rf _build
+
+    - name: Configure CMake
+      run: cmake -B _build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/_install
+
+    - name: Build
+      run: cmake --build _build
+
+    - name: Run Tests
+      run: ctest --verbose  # Используем ctest
+
+    - name: Install
+      run: cmake --build _build --target install
+
+    - name: Take Screenshot (If Tests Fail)
+      if: failure()
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gnome-screenshot
+        mkdir -p artifacts
+        export DISPLAY=:1
+        which gnome-screenshot
+        xvfb-run --auto-servernum --server-args='-screen 0 320x240x16' gnome-screenshot --file artifacts/screenshot.png
+
+    - name: Upload Artifacts (If Tests Fail)
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-failure-artifacts
+        path: artifacts
