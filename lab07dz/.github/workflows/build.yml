@@ -1,12 +1,11 @@
-name: Build Kali-Hunter DEB Package
+name: Build Kali-Hunter Package
 
 on:
   push:
+    branches: [ "main" ]
     paths:
-      - 'lab07dz/kali-hunter-package/**'
-      - '.github/workflows/build.yml'
-    branches: [ main ]
-
+      - "lab07dz/kali-hunter-package/**"
+      - ".github/workflows/build.yml"
   workflow_dispatch:
 
 jobs:
@@ -15,15 +14,43 @@ jobs:
     container: kalilinux/kali-rolling
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        path: "lab07dz"
 
-    - name: Build dependencies
+    - name: Debug directory structure
+      run: |
+        pwd
+        ls -R
+        echo "Checking workflow file:"
+        ls -la .github/workflows/
+      working-directory: lab07dz
+
+    - name: Install build dependencies
       run: |
         apt-get update
-        apt-get install -y devscripts debhelper
+        apt-get install -y devscripts debhelper equivs
+      working-directory: lab07dz
 
     - name: Build package
-      working-directory: ./lab07dz/kali-hunter-package
       run: |
+        cd kali-hunter-package
+        mk-build-deps --install --remove
         dpkg-buildpackage -uc -us
         mv ../kali-hunter_*.* ../
+      working-directory: lab07dz
+
+    - name: Verify artifacts
+      run: |
+        ls -la kali-hunter_*.*
+        dpkg -I kali-hunter_1.0-1_all.deb || true
+      working-directory: lab07dz
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts
+        path: |
+          lab07dz/kali-hunter_*.deb
+          lab07dz/kali-hunter_*.buildinfo
