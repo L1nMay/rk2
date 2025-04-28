@@ -4,8 +4,7 @@ on:
   push:
     branches: [ main ]
     tags: [ 'v*' ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,36 +12,29 @@ jobs:
     container: kalilinux/kali-rolling
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        path: lab07dz  # Ключевое изменение - указываем правильный путь
 
     - name: Prepare build environment
       run: |
         apt-get update
         apt-get install -y devscripts debhelper equivs dpkg-dev
+      working-directory: lab07dz  # Работаем в этой директории
 
     - name: Build package
-      working-directory: ./kali-hunter-package
       run: |
+        cd kali-hunter-package
         mk-build-deps --install --remove
         dpkg-buildpackage -uc -us
+      working-directory: lab07dz  # Все команды выполняются относительно этого пути
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
         name: build-artifacts
         path: |
-          ./kali-hunter_*.deb
-          ./kali-hunter_*.buildinfo
-          ./kali-hunter_*.changes
-          ./kali-hunter_*.dsc
-          ./kali-hunter_*.tar.gz
-
-    - name: Create Release
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: softprops/action-gh-release@v1
-      with:
-        files: |
-          kali-hunter_*.deb
-          kali-hunter_*.buildinfo
-          kali-hunter_*.changes
-        body: "Automatic build of Kali-Hunter package"
+          lab07dz/kali-hunter_*.deb
+          lab07dz/kali-hunter_*.buildinfo
+          lab07dz/kali-hunter_*.changes
