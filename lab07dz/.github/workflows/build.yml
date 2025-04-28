@@ -1,9 +1,12 @@
-name: Build Kali-Hunter Package
+name: Build Kali-Hunter DEB Package
 
 on:
   push:
+    paths:
+      - 'lab07dz/kali-hunter-package/**'
+      - '.github/workflows/build.yml'
     branches: [ main ]
-    tags: [ 'v*' ]
+
   workflow_dispatch:
 
 jobs:
@@ -14,39 +17,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Prepare build environment
+    - name: Build dependencies
       run: |
         apt-get update
-        apt-get install -y devscripts debhelper equivs dpkg-dev
+        apt-get install -y devscripts debhelper
 
     - name: Build package
+      working-directory: ./lab07dz/kali-hunter-package
       run: |
-        cd kali-hunter-package
-        mk-build-deps --install --remove
         dpkg-buildpackage -uc -us
-        mv ../kali-hunter_*.* .
-
-    - name: Verify artifacts
-      run: |
-        ls -la kali-hunter_*.*
-        dpkg -I kali-hunter_1.0-1_all.deb
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: build-artifacts
-        path: |
-          kali-hunter_*.deb
-          kali-hunter_*.buildinfo
-          kali-hunter_*.changes
-          kali-hunter_*.dsc
-          kali-hunter_*.tar.gz
-
-    - name: Create Release
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: softprops/action-gh-release@v1
-      with:
-        files: |
-          kali-hunter_*.deb
-          kali-hunter_*.buildinfo
-        body: "Automatic build of Kali-Hunter package"
+        mv ../kali-hunter_*.* ../
