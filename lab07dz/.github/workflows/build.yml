@@ -1,4 +1,4 @@
-name: Build Kali-Hunter Package
+ame: Build Kali-Hunter Package
 
 on:
   push:
