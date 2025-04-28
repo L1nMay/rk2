@@ -4,17 +4,17 @@ Binary: kali-hunter
 Architecture: all source
 Version: 1.0-1
 Checksums-Md5:
- 5a2bae706bd1ffa86ff0e7495e9bca54 519 kali-hunter_1.0-1.dsc
- 67f907c7f5dffe032c81b5abda2bbb01 1104 kali-hunter_1.0-1_all.deb
+ 7473791525e1981d6cdcd5b17ee80611 519 kali-hunter_1.0-1.dsc
+ 36745be4feb649a61056a9100d70d5be 1104 kali-hunter_1.0-1_all.deb
 Checksums-Sha1:
- 10db513e3b67939ffbd22daece5ecfdb22e03f7f 519 kali-hunter_1.0-1.dsc
- 103a8aeb1314411e41d4ce288c80608ca5b793b2 1104 kali-hunter_1.0-1_all.deb
+ 78b1c285a6b785bf5ab31763cff32673f625bbfa 519 kali-hunter_1.0-1.dsc
+ d3f23d164b2681d3c37f1e107df2dcdf4ad4d18c 1104 kali-hunter_1.0-1_all.deb
 Checksums-Sha256:
- dcd41364a241d385af7f044e9c8bf250abf7520b67cca882ac3327a8c74e48db 519 kali-hunter_1.0-1.dsc
- 60f7057fd73834f0f0f8202014b6ab27ee69a28221cd391121fb72c7a598f3fb 1104 kali-hunter_1.0-1_all.deb
+ bbe2b91fa6f28e5f5660677665325ffdf2f5ebdedf685a3664089fea2bb7bc4f 519 kali-hunter_1.0-1.dsc
+ 63bb1989d31af619aa5129dacb96bd927866184920027acc323f4ba241055afb 1104 kali-hunter_1.0-1_all.deb
 Build-Origin: Kali
 Build-Architecture: amd64
-Build-Date: Sun, 27 Apr 2025 09:11:18 -0400
+Build-Date: Sun, 27 Apr 2025 09:19:21 -0400
 Build-Tainted-By:
  usr-local-has-includes
  usr-local-has-libraries
@@ -203,4 +203,4 @@ Installed-Build-Depends:
 Environment:
  DEB_BUILD_OPTIONS="parallel=2"
  LANG="en_US.UTF-8"
- SOURCE_DATE_EPOCH="1745759474"
+ SOURCE_DATE_EPOCH="1745759957"

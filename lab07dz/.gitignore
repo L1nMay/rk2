@@ -1,0 +1,12 @@
+# Build artifacts
+*.deb
+*.buildinfo
+*.changes
+*.dsc
+*.tar.gz
+
+# Debian helper files
+debian/files
+debian/debhelper-build-stamp
+debian/*.substvars
+debian/.debhelper/

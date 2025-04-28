@@ -1,15 +1,48 @@
-name: Build Package
+name: Build Kali-Hunter Package
 
-on: [push, release]
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: kalilinux/kali-rolling
+
     steps:
-      - uses: actions/checkout@v2
-      - run: sudo apt update && sudo apt install -y debhelper
-      - run: dpkg-buildpackage -uc -us
-      - uses: actions/upload-artifact@v2
-        with:
-          name: kali-hunter-package
-          path: ../kali-hunter_*.deb
+    - uses: actions/checkout@v4
+
+    - name: Prepare build environment
+      run: |
+        apt-get update
+        apt-get install -y devscripts debhelper equivs dpkg-dev
+
+    - name: Build package
+      working-directory: ./kali-hunter-package
+      run: |
+        mk-build-deps --install --remove
+        dpkg-buildpackage -uc -us
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts
+        path: |
+          ./kali-hunter_*.deb
+          ./kali-hunter_*.buildinfo
+          ./kali-hunter_*.changes
+          ./kali-hunter_*.dsc
+          ./kali-hunter_*.tar.gz
+
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          kali-hunter_*.deb
+          kali-hunter_*.buildinfo
+          kali-hunter_*.changes
+        body: "Automatic build of Kali-Hunter package"

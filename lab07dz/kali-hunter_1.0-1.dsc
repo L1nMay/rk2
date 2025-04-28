@@ -9,8 +9,8 @@ Build-Depends: debhelper (>= 10)
 Package-List:
  kali-hunter deb metapackages optional arch=all
 Checksums-Sha1:
- a1071bf26436e554fe87e7967ab932653738d376 798 kali-hunter_1.0-1.tar.gz
+ 1a77602416d1c6bc8d0684c95948fb63c61bcc98 800 kali-hunter_1.0-1.tar.gz
 Checksums-Sha256:
- a2f153022cfa5930bfd04466661e665f69aad546c6ad4cedf8d6e194bfa0300d 798 kali-hunter_1.0-1.tar.gz
+ 439817c2d1dee64a2b096db0c6425e5185ddc44231a983051c3a13c7b79a1477 800 kali-hunter_1.0-1.tar.gz
 Files:
- 07019ea801c4de88d5995395550a0a48 798 kali-hunter_1.0-1.tar.gz
+ d3366f3937720c17136e6ed091f6f263 800 kali-hunter_1.0-1.tar.gz
