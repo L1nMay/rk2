@@ -1,7 +1,9 @@
-name: Build Kali-Hunter Package
+name: Build and Release Kali-Hunter Package
 
 on:
   push:
+    tags:
+      - 'v*' # Триггер на теги вида v1.0, v2.0
     branches: [ "main" ]
     paths:
       - "lab07dz/kali-hunter-package/**"
@@ -19,14 +21,6 @@ jobs:
       with:
         path: "lab07dz"
 
-    - name: Debug directory structure
-      run: |
-        pwd
-        ls -R
-        echo "Checking workflow file:"
-        ls -la .github/workflows/
-      working-directory: lab07dz
-
     - name: Install build dependencies
       run: |
         apt-get update
@@ -38,19 +32,36 @@ jobs:
         cd kali-hunter-package
         mk-build-deps --install --remove
         dpkg-buildpackage -uc -us
-        mv ../kali-hunter_*.* ../
+        mv ../kali-hextec_*.* ../
       working-directory: lab07dz
 
     - name: Verify artifacts
       run: |
-        ls -la kali-hunter_*.*
-        dpkg -I kali-hunter_1.0-1_all.deb || true
+        ls -la kali-hextec_*.*
+        dpkg -I kali-hextec_*.deb || true
       working-directory: lab07dz
 
-    - name: Upload artifacts
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          lab07dz/kali-hextec_*.deb
+          lab07dz/kali-hextec_*.buildinfo
+          lab07dz/kali-hextec_*.changes
+          lab07dz/kali-hextec_*.dsc
+          lab07dz/kali-hextec_*.tar.gz
+        tag_name: ${{ github.ref }}
+        release_name: "Kali-Hunter ${{ github.ref_name }}"
+        body: "Automated build of Kali-Hunter package"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload artifacts (non-tag pushes)
+      if: "!startsWith(github.ref, 'refs/tags/v')"
       uses: actions/upload-artifact@v3
       with:
         name: build-artifacts
         path: |
-          lab07dz/kali-hunter_*.deb
-          lab07dz/kali-hunter_*.buildinfo
+          lab07dz/kali-hextec_*.deb
+          lab07dz/kali-hextec_*.buildinfo
