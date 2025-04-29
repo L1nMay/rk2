@@ -6,8 +6,8 @@ on:
       - 'v*'
     branches: [ "main" ]
     paths:
-      - "kali-hunter-package/**"
-      - ".github/workflows/build.yml"
+      - "lab07dz/kali-hunter-package/**"
+      - "lab07dz/.github/workflows/build.yml"
   workflow_dispatch:
 
 jobs:
@@ -19,55 +19,59 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Важно для работы с тегами
+        path: "lab07dz"  # Все файлы кладем в lab07dz
+        fetch-depth: 0   # Для работы с тегами
 
-    - name: Debug directory structure
+    - name: Debug structure
       run: |
-        echo "Current directory:"
-        pwd
-        echo "Directory contents:"
+        echo "Working directory: $(pwd)"
+        echo "Contents:"
         ls -R
-        echo "Checking workflow file:"
-        ls -la .github/workflows/
+        echo "Workflow files:"
+        ls -la lab07dz/.github/workflows/
+      working-directory: .
 
-    - name: Install build dependencies
+    - name: Install dependencies
       run: |
         apt-get update
         apt-get install -y devscripts debhelper equivs
+      working-directory: lab07dz
 
     - name: Build package
       run: |
         cd kali-hunter-package
         mk-build-deps --install --remove
         dpkg-buildpackage -uc -us
-        ls ../*.deb ../*.buildinfo ../*.changes || true
+        mv ../kali-hextec_*.* ../
+      working-directory: lab07dz
 
     - name: Verify artifacts
       run: |
-        ls -la *.deb *.buildinfo *.changes *.dsc *.tar.gz || true
-        dpkg -I *.deb || true
+        ls -la kali-hextec_*.*
+        dpkg -I kali-hextec_*.deb || true
+      working-directory: lab07dz
 
-    - name: Create GitHub Release
+    - name: Create Release
       if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          *.deb
-          *.buildinfo
-          *.changes
-          *.dsc
-          *.tar.gz
+          lab07dz/kali-hextec_*.deb
+          lab07dz/kali-hextec_*.buildinfo
+          lab07dz/kali-hextec_*.changes
+          lab07dz/kali-hextec_*.dsc
+          lab07dz/kali-hextec_*.tar.gz
         tag_name: ${{ github.ref }}
-        release_name: "Kali-Hunter ${{ github.ref_name }}"
-        body: "Automated build of Kali-Hunter package"
+        release_name: "Release ${{ github.ref_name }}"
+        body: "Automated Kali-Hunter package release"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Upload artifacts (non-tag pushes)
+    - name: Upload artifacts
       if: "!startsWith(github.ref, 'refs/tags/v')"
       uses: actions/upload-artifact@v3
       with:
-        name: build-artifacts
+        name: package-artifacts
         path: |
-          *.deb
-          *.buildinfo
+          lab07dz/kali-hextec_*.deb
+          lab07dz/kali-hextec_*.buildinfo
