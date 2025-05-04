@@ -8,7 +8,6 @@ HunterGate(
     SHA1 "a8c1ff1a9f9a8b5a7456b89b818e5aef3460f890"
 )
 
-# Library target
 add_library(lab07dz
     src/lab07dz.cpp
     include/lab07dz/lab07dz.hpp
@@ -19,7 +18,7 @@ target_include_directories(lab07dz PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
-# Install rules
+# Исправлено: добавлена установка конфигурационных файлов
 install(TARGETS lab07dz EXPORT lab07dz-targets
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
@@ -29,13 +28,12 @@ install(TARGETS lab07dz EXPORT lab07dz-targets
 install(DIRECTORY include/ DESTINATION include)
 install(EXPORT lab07dz-targets
     FILE lab07dz-config.cmake
+    NAMESPACE lab07dz::
     DESTINATION lib/cmake/lab07dz
 )
 
-# Tests
-if(BUILD_TESTING)
-    enable_testing()
-    add_executable(lab07dz_test tests/test.cpp)
-    target_link_libraries(lab07dz_test lab07dz)
-    add_test(NAME lab07dz_test COMMAND lab07dz_test)
-endif()
+# Тесты
+enable_testing()
+add_executable(lab07dz_test tests/test.cpp)
+target_link_libraries(lab07dz_test lab07dz)
+add_test(NAME lab07dz_test COMMAND lab07dz_test)
