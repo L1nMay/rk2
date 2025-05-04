@@ -1,10 +1,10 @@
-name: Build and Release Hexline Package
+name: Build and Release Kali-Hunter Package
 
 on:
   push:
-    branches: ["main"]
     tags:
       - 'v*'
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -13,18 +13,9 @@ jobs:
     container: kalilinux/kali-rolling
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
       with:
-        path: "lab07dz"
         fetch-depth: 0
-
-    - name: Debug structure
-      run: |
-        echo "Working directory: $(pwd)"
-        echo "Contents:"
-        ls -R
-      working-directory: lab07dz
 
     - name: Install dependencies
       run: |
@@ -33,21 +24,33 @@ jobs:
 
     - name: Build package
       run: |
-        cd built-hexline_package
+        cd kali-hunter-package
         mk-build-deps --install --remove
         dpkg-buildpackage -uc -us
-        mv ../built-hexline_*.* ../
-      working-directory: lab07dz
 
-    - name: Create Release
+    - name: Verify artifacts
+      run: |
+        ls -la *.deb *.buildinfo *.changes *.dsc *.tar.gz
+        dpkg -I kali-hunter_*.deb
+
+    - name: Create GitHub Release
       if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          lab07dz/built-hexline_*.deb
-          lab07dz/built-hexline_*.buildinfo
-          lab07dz/built-hexline_*.changes
+          kali-hunter_*.deb
+          kali-hunter_*.buildinfo
+          kali-hunter_*.changes
+          kali-hunter_*.dsc
+          kali-hunter_*.tar.gz
         tag_name: ${{ github.ref }}
-        release_name: "Hexline ${{ github.ref_name }}"
+        release_name: "Kali-Hunter ${{ github.ref_name }}"
+        body: |
+          Automated release of Kali-Hunter package
+          Version: ${{ github.ref_name }}
+          Files included:
+          - DEB package
+          - Build metadata
+          - Source package
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
