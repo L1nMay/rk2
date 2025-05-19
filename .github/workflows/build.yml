@@ -3,14 +3,14 @@ name: Build and Deploy
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-24.04
-    env:
-      VERSION: 1.0.0
+    permissions:
+      contents: write  # Добавляем явные разрешения
+      packages: write
+      releases: write  # Ключевое разрешение для создания релизов
 
     steps:
     - uses: actions/checkout@v4
@@ -106,9 +106,12 @@ jobs:
         tag_name: v${{ env.VERSION }}
         name: RK2 v${{ env.VERSION }}
         body: |
-          Automatic build of RK2 project
-          - Version: ${{ env.VERSION }}
-          - SHA: ${{ github.sha }}
+          ### RK2 Release
+          **Version**: ${{ env.VERSION }}
+          **Build date**: $(date -u +'%Y-%m-%d %H:%M:%S')
+          
+          Contents:
+          - Proxy pattern implementation
+          - Unit tests
+          - DEB package for Ubuntu
         files: rk2_${{ env.VERSION }}_amd64.deb
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
