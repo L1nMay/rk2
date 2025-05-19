@@ -15,22 +15,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Fix directory structure
+    - name: Clean build directory
       run: |
-        # Проверяем текущую структуру
-        echo "Before moving:"
-        ls -la
-        
-        # Если файлы внутри rk2/ - перемещаем их в корень
-        if [ -d "rk2" ]; then
-          echo "Moving files from rk2/ to root"
-          mv rk2/* .
-          mv rk2/.git* . || true
-          rmdir rk2
-        fi
-
-        echo "After moving:"
-        ls -la
+        # Полная очистка предыдущих сборок
+        rm -rf build/ || true
+        rm -rf */build/ || true
 
     - name: Install dependencies
       run: |
@@ -50,7 +39,8 @@ jobs:
         cmake .. \
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_TESTING=ON \
-          -DCMAKE_CXX_STANDARD=11
+          -DCMAKE_CXX_STANDARD=11 \
+          --fresh  # Ключевое изменение - принудительный свежий конфиг
 
     - name: Build
       run: |
