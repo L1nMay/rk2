@@ -14,19 +14,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-      with:
-        path: '.'  # Явно указываем корневую директорию
 
-    - name: Verify files exist
+    - name: Prepare workspace
       run: |
-        echo "Current directory: $(pwd)"
-        echo "Files in root:"
+        # Перемещаем содержимое rk2/ в корень
+        if [ -d "rk2" ]; then
+          echo "Moving files from rk2/ to root..."
+          mv rk2/* .
+          mv rk2/.git* . || true
+          rmdir rk2
+        fi
+
+        echo "Final structure:"
         ls -la
-        echo "Checking CMakeLists.txt:"
-        if [ -f "CMakeLists.txt" ]; then
-          echo "CMakeLists.txt found!"
-        else
-          echo "ERROR: CMakeLists.txt not found!"
+
+        # Проверяем наличие CMakeLists.txt
+        if [ ! -f "CMakeLists.txt" ]; then
+          echo "ERROR: CMakeLists.txt not found after moving files!"
           exit 1
         fi
 
