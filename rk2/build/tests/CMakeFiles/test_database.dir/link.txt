@@ -1,1 +1,1 @@
-/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/test_database.dir/link.d CMakeFiles/test_database.dir/test_database.cpp.o -o test_database  ../librk2_lib.a /usr/lib/x86_64-linux-gnu/libgtest_main.a /usr/lib/x86_64-linux-gnu/libgtest.a
+/usr/bin/c++ -g -Wl,--dependency-file=CMakeFiles/test_database.dir/link.d CMakeFiles/test_database.dir/test_database.cpp.o -o test_database  ../librk2_lib.a /usr/lib/x86_64-linux-gnu/libgtest_main.a /usr/lib/x86_64-linux-gnu/libgtest.a

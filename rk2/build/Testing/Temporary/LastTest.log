@@ -1,3 +1,117 @@
-Start testing: May 19 04:12 EDT
+Start testing: May 19 07:05 EDT
 ----------------------------------------------------------
-End testing: May 19 04:12 EDT
+1/4 Testing: DatabaseTest.ReadWriteTest
+1/4 Test: DatabaseTest.ReadWriteTest
+Command: "/home/kali/workspace/rk2/build/tests/test_database" "--gtest_filter=DatabaseTest.ReadWriteTest" "--gtest_also_run_disabled_tests"
+Directory: /home/kali/workspace/rk2/build/tests
+"DatabaseTest.ReadWriteTest" start time: May 19 07:05 EDT
+Output:
+----------------------------------------------------------
+Running main() from ./googletest/src/gtest_main.cc
+Note: Google Test filter = DatabaseTest.ReadWriteTest
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DatabaseTest
+[ RUN      ] DatabaseTest.ReadWriteTest
+[       OK ] DatabaseTest.ReadWriteTest (0 ms)
+[----------] 1 test from DatabaseTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"DatabaseTest.ReadWriteTest" end time: May 19 07:05 EDT
+"DatabaseTest.ReadWriteTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/4 Testing: DatabaseTest.ConstructorTest
+2/4 Test: DatabaseTest.ConstructorTest
+Command: "/home/kali/workspace/rk2/build/tests/test_database" "--gtest_filter=DatabaseTest.ConstructorTest" "--gtest_also_run_disabled_tests"
+Directory: /home/kali/workspace/rk2/build/tests
+"DatabaseTest.ConstructorTest" start time: May 19 07:05 EDT
+Output:
+----------------------------------------------------------
+Running main() from ./googletest/src/gtest_main.cc
+Note: Google Test filter = DatabaseTest.ConstructorTest
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from DatabaseTest
+[ RUN      ] DatabaseTest.ConstructorTest
+creating file with name: test.db
+[       OK ] DatabaseTest.ConstructorTest (0 ms)
+[----------] 1 test from DatabaseTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"DatabaseTest.ConstructorTest" end time: May 19 07:05 EDT
+"DatabaseTest.ConstructorTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/4 Testing: ProxyTest.UnauthenticatedAccess
+3/4 Test: ProxyTest.UnauthenticatedAccess
+Command: "/home/kali/workspace/rk2/build/tests/test_proxy" "--gtest_filter=ProxyTest.UnauthenticatedAccess" "--gtest_also_run_disabled_tests"
+Directory: /home/kali/workspace/rk2/build/tests
+"ProxyTest.UnauthenticatedAccess" start time: May 19 07:05 EDT
+Output:
+----------------------------------------------------------
+Running main() from ./googletest/src/gtest_main.cc
+Note: Google Test filter = ProxyTest.UnauthenticatedAccess
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from ProxyTest
+[ RUN      ] ProxyTest.UnauthenticatedAccess
+creating file with name: test.db
+you don't have access to write to db
+you don't have access to read from db
+[       OK ] ProxyTest.UnauthenticatedAccess (0 ms)
+[----------] 1 test from ProxyTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"ProxyTest.UnauthenticatedAccess" end time: May 19 07:05 EDT
+"ProxyTest.UnauthenticatedAccess" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/4 Testing: ProxyTest.AuthenticatedAccess
+4/4 Test: ProxyTest.AuthenticatedAccess
+Command: "/home/kali/workspace/rk2/build/tests/test_proxy" "--gtest_filter=ProxyTest.AuthenticatedAccess" "--gtest_also_run_disabled_tests"
+Directory: /home/kali/workspace/rk2/build/tests
+"ProxyTest.AuthenticatedAccess" start time: May 19 07:05 EDT
+Output:
+----------------------------------------------------------
+Running main() from ./googletest/src/gtest_main.cc
+Note: Google Test filter = ProxyTest.AuthenticatedAccess
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from ProxyTest
+[ RUN      ] ProxyTest.AuthenticatedAccess
+creating file with name: test.db
+Proxy is reading the db ...
+[       OK ] ProxyTest.AuthenticatedAccess (0 ms)
+[----------] 1 test from ProxyTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"ProxyTest.AuthenticatedAccess" end time: May 19 07:05 EDT
+"ProxyTest.AuthenticatedAccess" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: May 19 07:05 EDT

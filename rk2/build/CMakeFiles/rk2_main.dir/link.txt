@@ -1,1 +1,1 @@
-/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/rk2_main.dir/link.d CMakeFiles/rk2_main.dir/src/main.cpp.o -o rk2_main  librk2_lib.a
+/usr/bin/c++ -g -Wl,--dependency-file=CMakeFiles/rk2_main.dir/link.d CMakeFiles/rk2_main.dir/src/main.cpp.o -o rk2_main  librk2_lib.a

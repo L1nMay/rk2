@@ -1,5 +1,5 @@
 add_test([=[ProxyTest.UnauthenticatedAccess]=]  /home/kali/workspace/rk2/build/tests/test_proxy [==[--gtest_filter=ProxyTest.UnauthenticatedAccess]==] --gtest_also_run_disabled_tests)
-set_tests_properties([=[ProxyTest.UnauthenticatedAccess]=]  PROPERTIES WORKING_DIRECTORY /home/kali/workspace/rk2/build/tests SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+set_tests_properties([=[ProxyTest.UnauthenticatedAccess]=]  PROPERTIES WORKING_DIRECTORY /home/kali/workspace/rk2/build/tests SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==] TIMEOUT 10)
 add_test([=[ProxyTest.AuthenticatedAccess]=]  /home/kali/workspace/rk2/build/tests/test_proxy [==[--gtest_filter=ProxyTest.AuthenticatedAccess]==] --gtest_also_run_disabled_tests)
-set_tests_properties([=[ProxyTest.AuthenticatedAccess]=]  PROPERTIES WORKING_DIRECTORY /home/kali/workspace/rk2/build/tests SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+set_tests_properties([=[ProxyTest.AuthenticatedAccess]=]  PROPERTIES WORKING_DIRECTORY /home/kali/workspace/rk2/build/tests SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==] TIMEOUT 10)
 set(  test_proxy_TESTS ProxyTest.UnauthenticatedAccess ProxyTest.AuthenticatedAccess)

@@ -1,48 +1,92 @@
-name: Build and Test
+name: Build, Test and Package
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      BUILD_TYPE: Release
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential cmake libgtest-dev
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          libgtest-dev \
+          googletest \
+          debhelper \
+          dpkg-dev
 
-    - name: Configure and Build
+    - name: Configure CMake
       run: |
         mkdir -p build
         cd build
-        cmake .. -DBUILD_TESTING=ON
+        cmake .. \
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+          -DBUILD_TESTING=ON \
+          -DCMAKE_CXX_STANDARD=11
+
+    - name: Build project
+      run: |
+        cd build
         make -j4
 
     - name: Run tests
       run: |
         cd build
-        ctest --output-on-failure
+        ctest --output-on-failure --verbose
 
     - name: Create DEB package
       run: |
         mkdir -p rk2-package/usr/bin
         cp build/rk2_main rk2-package/usr/bin/
+
         mkdir -p rk2-package/DEBIAN
         cat > rk2-package/DEBIAN/control <<EOF
         Package: rk2
         Version: 1.0
-        Section: base
+        Section: utils
         Priority: optional
         Architecture: amd64
         Maintainer: Your Name <your.email@example.com>
-        Description: RK2 Project
+        Description: RK2 Project - Proxy Pattern Implementation
+         This package contains the executable and libraries
+         for the RK2 design pattern project.
         EOF
-        dpkg-deb --build rk2-package
 
-    - uses: actions/upload-artifact@v3
+        dpkg-deb --build rk2-package
+        mv rk2-package.deb rk2_1.0_amd64.deb
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
       with:
         name: rk2-package
-        path: rk2-package.deb
+        path: |
+          build/rk2_main
+          rk2_1.0_amd64.deb
+
+    - name: Create release
+      if: github.ref == 'refs/heads/main'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          rk2_1.0_amd64.deb
+          build/rk2_main
+        tag_name: v1.0
+        name: RK2 Release v1.0
+        body: |
+          Automatic build of RK2 project
+          - Includes proxy pattern implementation
+          - Tested on Ubuntu Linux
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
