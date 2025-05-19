@@ -15,24 +15,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Prepare workspace
+    - name: Clean previous builds
       run: |
-        # Перемещаем содержимое rk2/ в корень
-        if [ -d "rk2" ]; then
-          echo "Moving files from rk2/ to root..."
-          mv rk2/* .
-          mv rk2/.git* . || true
-          rmdir rk2
-        fi
-
-        echo "Final structure:"
-        ls -la
-
-        # Проверяем наличие CMakeLists.txt
-        if [ ! -f "CMakeLists.txt" ]; then
-          echo "ERROR: CMakeLists.txt not found after moving files!"
-          exit 1
-        fi
+        rm -rf build/ || true
+        rm -rf */build/ || true
 
     - name: Install dependencies
       run: |
@@ -45,14 +31,15 @@ jobs:
           debhelper \
           dpkg-dev
 
-    - name: Configure CMake
+    - name: Configure CMake (fresh)
       run: |
         mkdir -p build
         cd build
         cmake .. \
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_TESTING=ON \
-          -DCMAKE_CXX_STANDARD=11
+          -DCMAKE_CXX_STANDARD=11 \
+          -UCMAKE_CACHEFILE_DIR  # Ключевое исправление - сбрасываем кэш путей
 
     - name: Build
       run: |
