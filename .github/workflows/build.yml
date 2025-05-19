@@ -15,15 +15,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        path: 'src'  # Ключевое изменение - кладем все в подпапку src
+        path: '.'  # Явно указываем корневую директорию
 
-    - name: Debug directory structure
+    - name: Verify files exist
       run: |
-        echo "Current working directory: $(pwd)"
-        echo "Directory contents:"
+        echo "Current directory: $(pwd)"
+        echo "Files in root:"
         ls -la
-        echo "src directory contents:"
-        ls -la src/
+        echo "Checking CMakeLists.txt:"
+        if [ -f "CMakeLists.txt" ]; then
+          echo "CMakeLists.txt found!"
+        else
+          echo "ERROR: CMakeLists.txt not found!"
+          exit 1
+        fi
 
     - name: Install dependencies
       run: |
@@ -37,7 +42,6 @@ jobs:
           dpkg-dev
 
     - name: Configure CMake
-      working-directory: ./src  # Указываем рабочую директорию
       run: |
         mkdir -p build
         cd build
@@ -47,17 +51,16 @@ jobs:
           -DCMAKE_CXX_STANDARD=11
 
     - name: Build
-      working-directory: ./src/build
       run: |
+        cd build
         make -j$(nproc)
 
     - name: Run tests
-      working-directory: ./src/build
       run: |
+        cd build
         ctest --output-on-failure --verbose
 
     - name: Create DEB package
-      working-directory: ./src
       run: |
         mkdir -p package/usr/bin
         cp build/rk2_main package/usr/bin/
@@ -77,7 +80,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: deb-package
-        path: src/rk2_${{ env.VERSION }}_amd64.deb
+        path: rk2_${{ env.VERSION }}_amd64.deb
 
     - name: Create Release
       if: github.ref == 'refs/heads/main'
@@ -89,6 +92,6 @@ jobs:
           Automatic build of RK2 project
           - Version: ${{ env.VERSION }}
           - SHA: ${{ github.sha }}
-        files: src/rk2_${{ env.VERSION }}_amd64.deb
+        files: rk2_${{ env.VERSION }}_amd64.deb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
