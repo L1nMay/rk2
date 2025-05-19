@@ -14,20 +14,34 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-      with:
-        path: 'project'  # Явно указываем путь для checkout
 
-    - name: Prepare workspace
+    - name: Fix directory structure
       run: |
-        # Перемещаем все файлы в корень workspace
-        mv project/* .
-        mv project/.git* . || true
-        rmdir project
+        # Проверяем структуру
+        echo "Initial structure:"
+        ls -la
+        
+        # Если файлы внутри rk2/rk2/
+        if [ -d "rk2/rk2" ]; then
+          echo "Moving files from rk2/rk2 to root"
+          mv rk2/rk2/* .
+          mv rk2/rk2/.git* . || true
+          rm -rf rk2
+        # Если файлы просто в rk2/  
+        elif [ -d "rk2" ]; then
+          echo "Moving files from rk2 to root"
+          mv rk2/* .
+          mv rk2/.git* . || true
+          rm -rf rk2
+        fi
 
-        # Проверяем наличие CMakeLists.txt
+        echo "Final structure:"
+        ls -la
+
+        # Проверка CMakeLists.txt
         if [ ! -f "CMakeLists.txt" ]; then
-          echo "ERROR: CMakeLists.txt not found!"
-          echo "Current directory contents:"
+          echo "ERROR: CMakeLists.txt still not found!"
+          echo "Current files:"
           ls -la
           exit 1
         fi
