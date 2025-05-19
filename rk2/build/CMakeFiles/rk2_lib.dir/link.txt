@@ -1,0 +1,2 @@
+/usr/bin/ar qc librk2_lib.a CMakeFiles/rk2_lib.dir/src/database.cpp.o CMakeFiles/rk2_lib.dir/src/proxy.cpp.o
+/usr/bin/ranlib librk2_lib.a

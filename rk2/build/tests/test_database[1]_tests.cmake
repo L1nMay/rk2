@@ -1,0 +1,5 @@
+add_test([=[DatabaseTest.ReadWriteTest]=]  /home/kali/workspace/rk2/build/tests/test_database [==[--gtest_filter=DatabaseTest.ReadWriteTest]==] --gtest_also_run_disabled_tests)
+set_tests_properties([=[DatabaseTest.ReadWriteTest]=]  PROPERTIES WORKING_DIRECTORY /home/kali/workspace/rk2/build/tests SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+add_test([=[DatabaseTest.ConstructorTest]=]  /home/kali/workspace/rk2/build/tests/test_database [==[--gtest_filter=DatabaseTest.ConstructorTest]==] --gtest_also_run_disabled_tests)
+set_tests_properties([=[DatabaseTest.ConstructorTest]=]  PROPERTIES WORKING_DIRECTORY /home/kali/workspace/rk2/build/tests SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+set(  test_database_TESTS DatabaseTest.ReadWriteTest DatabaseTest.ConstructorTest)

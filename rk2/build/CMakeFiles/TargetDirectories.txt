@@ -1,0 +1,8 @@
+/home/kali/workspace/rk2/build/CMakeFiles/rk2_lib.dir
+/home/kali/workspace/rk2/build/CMakeFiles/rk2_main.dir
+/home/kali/workspace/rk2/build/CMakeFiles/edit_cache.dir
+/home/kali/workspace/rk2/build/CMakeFiles/rebuild_cache.dir
+/home/kali/workspace/rk2/build/tests/CMakeFiles/test_database.dir
+/home/kali/workspace/rk2/build/tests/CMakeFiles/test_proxy.dir
+/home/kali/workspace/rk2/build/tests/CMakeFiles/edit_cache.dir
+/home/kali/workspace/rk2/build/tests/CMakeFiles/rebuild_cache.dir

@@ -1,61 +1,26 @@
-name: Build and Package
+name: Build and Test
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Шаг 1: Получаем код из репозитория
     - uses: actions/checkout@v2
 
-    # Шаг 2: Устанавливаем зависимости
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential cmake libgtest-dev debhelper
+        sudo apt-get install -y build-essential cmake libgtest-dev
 
-    # Шаг 3: Собираем и тестируем проект
-    - name: Build and Test
+    - name: Build
       run: |
-        mkdir build
-        cd build
-        cmake ..
+        mkdir build && cd build
+        cmake .. -DBUILD_TESTING=ON
         make
-        ctest --output-on-failure
 
-    # Шаг 4: Создаем DEB-пакет
-    - name: Create DEB package
+    - name: Run tests
       run: |
-        mkdir -p rk2-package/usr/bin
-        cp build/rk2_main rk2-package/usr/bin/
-        mkdir -p rk2-package/DEBIAN
-        echo "Package: rk2" > rk2-package/DEBIAN/control
-        echo "Version: 1.0" >> rk2-package/DEBIAN/control
-        echo "Section: base" >> rk2-package/DEBIAN/control
-        echo "Priority: optional" >> rk2-package/DEBIAN/control
-        echo "Architecture: amd64" >> rk2-package/DEBIAN/control
-        echo "Maintainer: Your Name <your.email@example.com>" >> rk2-package/DEBIAN/control
-        echo "Description: RK2 Project" >> rk2-package/DEBIAN/control
-        dpkg-deb --build rk2-package
-
-    # Шаг 5: Загружаем артефакт (DEB-пакет)
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: rk2-package
-        path: rk2-package.deb
-
-    # Шаг 6: Создаем релиз (только для main ветки)
-    - name: Create Release
-      if: github.ref == 'refs/heads/main'
-      uses: softprops/action-gh-release@v1
-      with:
-        files: rk2-package.deb
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        cd build
+        ctest --output-on-failure

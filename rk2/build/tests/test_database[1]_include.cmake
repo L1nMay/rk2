@@ -1,0 +1,5 @@
+if(EXISTS "/home/kali/workspace/rk2/build/tests/test_database[1]_tests.cmake")
+  include("/home/kali/workspace/rk2/build/tests/test_database[1]_tests.cmake")
+else()
+  add_test(test_database_NOT_BUILT test_database_NOT_BUILT)
+endif()
