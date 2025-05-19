@@ -1,10 +1,10 @@
-name: Build, Test and Package
+name: Build and Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -14,19 +14,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-      with:
-        path: 'source'  # Клонируем в подпапку source вместо rk2
 
-    - name: Prepare workspace
+    - name: Fix directory structure
       run: |
-        # Перемещаем все содержимое в корень рабочей директории
-        mv source/* .
-        mv source/.git* . || true  # Переносим скрытые файлы git
-        rmdir source
+        # Проверяем текущую структуру
+        echo "Before moving:"
+        ls -la
+        
+        # Если файлы внутри rk2/ - перемещаем их в корень
+        if [ -d "rk2" ]; then
+          echo "Moving files from rk2/ to root"
+          mv rk2/* .
+          mv rk2/.git* . || true
+          rmdir rk2
+        fi
 
-        # Проверяем структуру (для отладки)
-        echo "Final structure:"
-        tree -L 2
+        echo "After moving:"
+        ls -la
 
     - name: Install dependencies
       run: |
@@ -48,7 +52,7 @@ jobs:
           -DBUILD_TESTING=ON \
           -DCMAKE_CXX_STANDARD=11
 
-    - name: Build project
+    - name: Build
       run: |
         cd build
         make -j$(nproc)
@@ -67,19 +71,15 @@ jobs:
         cat > package/DEBIAN/control <<EOF
         Package: rk2
         Version: ${{ env.VERSION }}
-        Section: utils
-        Priority: optional
         Architecture: amd64
         Maintainer: Your Name <your.email@example.com>
-        Description: RK2 Project - Proxy Pattern Implementation
-         This package contains the executable for RK2 project.
+        Description: RK2 Project
         EOF
         
         dpkg-deb --build --root-owner-group package
         mv package.deb rk2_${{ env.VERSION }}_amd64.deb
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v4
       with:
         name: deb-package
         path: rk2_${{ env.VERSION }}_amd64.deb
@@ -91,14 +91,9 @@ jobs:
         tag_name: v${{ env.VERSION }}
         name: RK2 v${{ env.VERSION }}
         body: |
-          ### RK2 Release
-          **Version**: ${{ env.VERSION }}
-          **Build date**: $(date -u +'%Y-%m-%d %H:%M:%S')
-          
-          Contents:
-          - Proxy pattern implementation
-          - Unit tests
-          - DEB package for Ubuntu
+          Automatic build of RK2 project
+          - Version: ${{ env.VERSION }}
+          - SHA: ${{ github.sha }}
         files: rk2_${{ env.VERSION }}_amd64.deb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
