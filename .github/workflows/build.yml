@@ -20,7 +20,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Фикс структуры (если файлы в rk2/)
     - name: Prepare workspace
       run: |
         if [ -d "rk2" ]; then
@@ -71,7 +70,7 @@ jobs:
         Package: rk2
         Version: ${{ env.VERSION }}
         Architecture: amd64
-        Maintainer: Your Name <your.email@example.com>
+        Maintainer: Your Name ilazayzev@gmail.com
         Description: RK2 Project - Proxy Pattern Implementation
         EOF
         
