@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build, Test and Package
 
 on:
   push:
@@ -8,12 +8,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       VERSION: 1.0.0
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Install dependencies
       run: |
@@ -26,10 +27,18 @@ jobs:
           debhelper \
           dpkg-dev
 
-    - name: Configure and Build
+    - name: Configure CMake
       run: |
-        mkdir build && cd build
-        cmake .. -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Release
+        mkdir -p build
+        cd build
+        cmake .. \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_TESTING=ON \
+          -DCMAKE_CXX_STANDARD=11
+
+    - name: Build project
+      run: |
+        cd build
         make -j$(nproc)
 
     - name: Run tests
@@ -46,31 +55,41 @@ jobs:
         cat > rk2-package/DEBIAN/control <<EOF
         Package: rk2
         Version: ${{ env.VERSION }}
+        Section: utils
+        Priority: optional
         Architecture: amd64
         Maintainer: Your Name <your.email@example.com>
         Description: RK2 Project - Proxy Pattern Implementation
-        Depends: libc6 (>= 2.34)
+         This package contains the executable for RK2 project
+         implementing Proxy design pattern.
         EOF
 
-        dpkg-deb --build rk2-package
+        dpkg-deb --build --root-owner-group rk2-package
         mv rk2-package.deb rk2_${{ env.VERSION }}_amd64.deb
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: deb-package
-        path: rk2_${{ env.VERSION }}_amd64.deb
+        name: rk2-package
+        path: |
+          rk2_${{ env.VERSION }}_amd64.deb
+          build/rk2_main
 
     - name: Create Release
       if: github.ref == 'refs/heads/main'
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: v${{ env.VERSION }}
         name: RK2 v${{ env.VERSION }}
         body: |
-          Automatic build of RK2 project
-          - Includes proxy pattern implementation
-          - Version: ${{ env.VERSION }}
+          ### RK2 Release
+          **Version**: ${{ env.VERSION }}
+          **Build date**: $(date -u +'%Y-%m-%d %H:%M:%S')
+
+          Includes:
+          - Proxy pattern implementation
+          - Unit tests
+          - DEB package
         files: rk2_${{ env.VERSION }}_amd64.deb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
