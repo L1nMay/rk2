@@ -7,20 +7,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential cmake libgtest-dev
 
-    - name: Build
+    - name: Configure and Build
       run: |
-        mkdir build && cd build
+        mkdir -p build
+        cd build
         cmake .. -DBUILD_TESTING=ON
-        make
+        make -j4
 
     - name: Run tests
       run: |
         cd build
         ctest --output-on-failure
+
+    - name: Create DEB package
+      run: |
+        mkdir -p rk2-package/usr/bin
+        cp build/rk2_main rk2-package/usr/bin/
+        mkdir -p rk2-package/DEBIAN
+        cat > rk2-package/DEBIAN/control <<EOF
+        Package: rk2
+        Version: 1.0
+        Section: base
+        Priority: optional
+        Architecture: amd64
+        Maintainer: Your Name <your.email@example.com>
+        Description: RK2 Project
+        EOF
+        dpkg-deb --build rk2-package
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: rk2-package
+        path: rk2-package.deb
