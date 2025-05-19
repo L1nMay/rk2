@@ -1,20 +1,41 @@
-name: Build, Test and Package
+name: Build, Test and Release
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+env:
+  VERSION: 1.0.0
 
 jobs:
   build:
     runs-on: ubuntu-24.04
-    env:
-      VERSION: 1.0.0
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+
+    - name: Prepare workspace
+      run: |
+        if [ -d "rk2" ]; then
+          echo "Moving files from rk2/ to root..."
+          mv rk2/* .
+          mv rk2/.* . 2>/dev/null || true
+          rmdir rk2
+        fi
+        
+        echo "Final structure:"
+        ls -la
+        
+        if [ ! -f "CMakeLists.txt" ]; then
+          echo "ERROR: CMakeLists.txt not found!"
+          exit 1
+        fi
 
     - name: Install dependencies
       run: |
@@ -27,23 +48,16 @@ jobs:
           debhelper \
           dpkg-dev
 
-    - name: Configure CMake
+    - name: Build and Test
       run: |
-        mkdir -p build
-        cd build
+        mkdir -p build && cd build
         cmake .. \
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_TESTING=ON \
-          -DCMAKE_CXX_STANDARD=11
-
-    - name: Build project
-      run: |
-        cd build
+          -DCMAKE_CXX_STANDARD=11 \
+          --fresh
+        
         make -j$(nproc)
-
-    - name: Run tests
-      run: |
-        cd build
         ctest --output-on-failure
 
     - name: Create DEB package
@@ -55,12 +69,9 @@ jobs:
         cat > package/DEBIAN/control <<EOF
         Package: rk2
         Version: ${{ env.VERSION }}
-        Section: utils
-        Priority: optional
         Architecture: amd64
-        Maintainer: Your Name <your.email@example.com>
+        Maintainer: Your Name ilazayzev@gmail.com
         Description: RK2 Project - Proxy Pattern Implementation
-         This package contains the implementation of Proxy design pattern.
         EOF
         
         dpkg-deb --build --root-owner-group package
@@ -79,14 +90,12 @@ jobs:
         tag_name: v${{ env.VERSION }}
         name: RK2 v${{ env.VERSION }}
         body: |
-          ### RK2 Release
-          **Version**: ${{ env.VERSION }}
+          ### RK2 Release ${{ env.VERSION }}
           **Build date**: $(date -u +'%Y-%m-%d %H:%M:%S')
+          **Commit**: ${{ github.sha }}
           
-          Contents:
+          Includes:
           - Proxy pattern implementation
           - Unit tests
           - DEB package for Ubuntu
         files: rk2_${{ env.VERSION }}_amd64.deb
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
