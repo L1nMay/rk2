@@ -14,11 +14,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        path: 'project'  # Явно указываем путь для checkout
 
-    - name: Clean previous builds
+    - name: Prepare workspace
       run: |
-        rm -rf build/ || true
-        rm -rf */build/ || true
+        # Перемещаем все файлы в корень workspace
+        mv project/* .
+        mv project/.git* . || true
+        rmdir project
+
+        # Проверяем наличие CMakeLists.txt
+        if [ ! -f "CMakeLists.txt" ]; then
+          echo "ERROR: CMakeLists.txt not found!"
+          echo "Current directory contents:"
+          ls -la
+          exit 1
+        fi
 
     - name: Install dependencies
       run: |
@@ -31,7 +43,7 @@ jobs:
           debhelper \
           dpkg-dev
 
-    - name: Configure CMake (fresh)
+    - name: Configure CMake
       run: |
         mkdir -p build
         cd build
@@ -39,7 +51,7 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_TESTING=ON \
           -DCMAKE_CXX_STANDARD=11 \
-          -UCMAKE_CACHEFILE_DIR  # Ключевое исправление - сбрасываем кэш путей
+          --fresh
 
     - name: Build
       run: |
