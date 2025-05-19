@@ -14,12 +14,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        path: 'src'  # Ключевое изменение - кладем все в подпапку src
 
-    - name: Clean build directory
+    - name: Debug directory structure
       run: |
-        # Полная очистка предыдущих сборок
-        rm -rf build/ || true
-        rm -rf */build/ || true
+        echo "Current working directory: $(pwd)"
+        echo "Directory contents:"
+        ls -la
+        echo "src directory contents:"
+        ls -la src/
 
     - name: Install dependencies
       run: |
@@ -33,26 +37,27 @@ jobs:
           dpkg-dev
 
     - name: Configure CMake
+      working-directory: ./src  # Указываем рабочую директорию
       run: |
         mkdir -p build
         cd build
         cmake .. \
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_TESTING=ON \
-          -DCMAKE_CXX_STANDARD=11 \
-          --fresh  # Ключевое изменение - принудительный свежий конфиг
+          -DCMAKE_CXX_STANDARD=11
 
     - name: Build
+      working-directory: ./src/build
       run: |
-        cd build
         make -j$(nproc)
 
     - name: Run tests
+      working-directory: ./src/build
       run: |
-        cd build
         ctest --output-on-failure --verbose
 
     - name: Create DEB package
+      working-directory: ./src
       run: |
         mkdir -p package/usr/bin
         cp build/rk2_main package/usr/bin/
@@ -72,7 +77,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: deb-package
-        path: rk2_${{ env.VERSION }}_amd64.deb
+        path: src/rk2_${{ env.VERSION }}_amd64.deb
 
     - name: Create Release
       if: github.ref == 'refs/heads/main'
@@ -84,6 +89,6 @@ jobs:
           Automatic build of RK2 project
           - Version: ${{ env.VERSION }}
           - SHA: ${{ github.sha }}
-        files: rk2_${{ env.VERSION }}_amd64.deb
+        files: src/rk2_${{ env.VERSION }}_amd64.deb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
