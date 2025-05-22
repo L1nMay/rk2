@@ -1,5 +1,0 @@
-DatabaseTest.ReadWriteTest 1 0.01246
-DatabaseTest.ConstructorTest 1 0.010711
-ProxyTest.UnauthenticatedAccess 1 0.0165384
-ProxyTest.AuthenticatedAccess 1 0.0132034
----
